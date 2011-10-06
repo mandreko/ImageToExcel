@@ -10,6 +10,7 @@ namespace ImageToExcel
     {
         private const decimal DefaultResizeMultiplier = 1m;
         private const int DefaultZoomScale = 10;
+        private const int DefaultPixelSize = 5;
 
         public void Convert(string imagePath, string excelPath, int? resizePercentage = null)
         {
@@ -44,30 +45,13 @@ namespace ImageToExcel
 
             //ws.View.ZoomScale = DefaultZoomScale;
 
-            // Notes on excel units:
-            // 9 excel units = 
-            // 68px wide
-            // 12px tall
-               
-            // 1 excel unit = 
-            // 7.555555555555556 wide
-            // .75 tall
-               
-            // 1px
-            // 0.75 tall
-            // 0.08 wide
-               
-            // 100px
-            // 75 tall
-            // 13.57 wide
-
             for (int x = 1; x <= bitmap.Width; x++)
             {
-                ws.Column(x).Width = .42; // 5px
+                ws.Column(x).Width = ExcelHelper.Pixel2ColumnWidth(ws, DefaultPixelSize);
             }
             for (int y = 1; y <= bitmap.Height; y++)
             {
-                ws.Row(y).Height = 3.75; // 5px
+                ws.Row(y).Height = ExcelHelper.Pixel2RowHeight(DefaultPixelSize);
             }
 
             pck.Save();
