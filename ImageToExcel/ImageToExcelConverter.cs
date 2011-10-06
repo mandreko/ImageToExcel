@@ -8,14 +8,21 @@ namespace ImageToExcel
 {
     public class ImageToExcelConverter
     {
-        public void Convert(string imagePath, string excelPath)
+        private const decimal DefaultResizeMultiplier = 1m;
+        private const int DefaultZoomScale = 10;
+
+        public void Convert(string imagePath, string excelPath, int? resizePercentage = null)
         {
             if (imagePath == null) throw new ArgumentNullException("imagePath");
             if (excelPath == null) throw new ArgumentNullException("excelPath");
 
             if (!File.Exists(imagePath)) throw new ArgumentException("Image path does not exist", "imagePath");
+            if (File.Exists(excelPath)) throw new ArgumentException("Excel path already exists", "imagePath");
 
             Bitmap bitmap = new Bitmap(imagePath);
+
+            // At least reduce the size by the default size. If user specified more, keep going based on the default
+            bitmap = ResizeBitMap(bitmap, resizePercentage);
 
             FileInfo newFile = new FileInfo(excelPath);
             ExcelPackage pck = new ExcelPackage(newFile);
@@ -34,8 +41,8 @@ namespace ImageToExcel
                     ws.Cells[cell].Style.Fill.BackgroundColor.SetColor(pixelColor);
                 }
             }
-            
-            ws.View.ZoomScale = 10;
+
+            ws.View.ZoomScale = DefaultZoomScale;
 
             for (int x = 1; x < bitmap.Width; x++)
             {
@@ -48,6 +55,30 @@ namespace ImageToExcel
 
             pck.Save();
 
+        }
+
+        private Bitmap ResizeBitMap(Bitmap bitmap, int? resizePercentage)
+        {
+            // Modify the size based on the default
+            decimal newHeightDecimal = bitmap.Height * DefaultResizeMultiplier;
+            decimal newWidthDecimal = (bitmap.Width * DefaultResizeMultiplier);
+
+            if (resizePercentage.HasValue)
+            {
+                newHeightDecimal = newHeightDecimal * (((decimal)resizePercentage.Value) / 100);
+                newWidthDecimal = newWidthDecimal * (((decimal)resizePercentage.Value) / 100);
+            }
+
+            int newHeight = (int)Math.Floor(newHeightDecimal);
+            int newWidth = (int)Math.Floor(newWidthDecimal);
+
+            Bitmap result = new Bitmap(newWidth, newHeight);
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.DrawImage(bitmap, 0, 0, newWidth, newHeight);
+            }
+
+            return result;
         }
 
         private static string GetExcelColumnName(int columnNumber)
