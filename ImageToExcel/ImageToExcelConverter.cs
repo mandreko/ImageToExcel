@@ -42,15 +42,32 @@ namespace ImageToExcel
                 }
             }
 
-            ws.View.ZoomScale = DefaultZoomScale;
+            //ws.View.ZoomScale = DefaultZoomScale;
 
-            for (int x = 1; x < bitmap.Width; x++)
+            // Notes on excel units:
+            // 9 excel units = 
+            // 68px wide
+            // 12px tall
+               
+            // 1 excel unit = 
+            // 7.555555555555556 wide
+            // .75 tall
+               
+            // 1px
+            // 0.75 tall
+            // 0.08 wide
+               
+            // 100px
+            // 75 tall
+            // 13.57 wide
+
+            for (int x = 1; x <= bitmap.Width; x++)
             {
-                ws.Column(x).Width = 2;
+                ws.Column(x).Width = .42; // 5px
             }
-            for (int y = 1; y < bitmap.Height; y++)
+            for (int y = 1; y <= bitmap.Height; y++)
             {
-                ws.Row(y).Height = 5;
+                ws.Row(y).Height = 3.75; // 5px
             }
 
             pck.Save();
