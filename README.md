@@ -5,4 +5,4 @@ This application simply converts images to Excel files, with each pixel of the i
 
 Usage: ImageToExcel.exe image_filename output_excel_filename [resize_percentage]
 
-![Example output](http://dl.dropbox.com/u/176259/nyan_excel.png)
+![Example output](https://i.imgur.com/AxCatsi.png)
